@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tesla Stock Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        h1 { text-align: center; color: #00ffea; margin-bottom: 30px; font-weight: 700; }
+
+        /* KPI Cards */
+        .card {
+            border-radius: 15px;
+            color: #fff;
+            margin: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: linear-gradient(135deg, #00ffea, #0077b6);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,255,234,0.4);
+        }
+        .stats { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+
+        /* Table styling */
+        .table-container { overflow-x: auto; margin-top: 30px; }
+        table th { background-color: #00ffea; color: #0a0a0a; font-weight: 700; }
+        table td { text-align: center; font-weight: 500; transition: background 0.3s; }
+        table tr:hover td { background: rgba(0,255,234,0.2); }
+
+        /* Filter */
+        .filter-form { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        select { padding: 5px 10px; border-radius: 8px; border: none; }
+
+        /* Plot container */
+        #plot { width: 100%; height: 600px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📊 Tesla Stock Prediction Dashboard</h1>
+
+    <!-- Filter Form -->
+    <form method="POST" class="filter-form">
+        <label for="points" style="margin-right: 10px;">Show last points:</label>
+        <select name="points" onchange="this.form.submit()">
+            <option value="10" {% if n_points==10 %}selected{% endif %}>10</option>
+            <option value="50" {% if n_points==50 %}selected{% endif %}>50</option>
+            <option value="100" {% if n_points==100 %}selected{% endif %}>100</option>
+        </select>
+    </form>
+
+    <!-- Stats Cards -->
+    <div class="stats">
+        {% for key, value in stats.items() %}
+        <div class="card p-3 m-2" style="width: 180px;">
+            <h5>{{ key }}</h5>
+            <p style="font-size: 1.3rem;">{{ value }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Plotly Chart -->
+    <div id="plot">{{ plot_div | safe }}</div>
+
+    <!-- Color-coded Table -->
+    <div class="table-container">
+        {{ table_html | safe }}
+    </div>
+</div>
+
+<script>
+    // Optional: Animate lines on page load
+    let plotDiv = document.getElementById('plot').children[0]; // Plotly chart div
+    if(plotDiv && Plotly) {
+        Plotly.animate(plotDiv, {
+            data: [{}, {}],
+            traces: [0,1],
+            layout: {}
+        }, {
+            transition: { duration: 1000 },
+            frame: { duration: 1000 }
+        });
+    }
+</script>
+</body>
+</html>
